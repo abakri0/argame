@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الشفرة المشفرة - اكتشف الأردوينو</title>
+    <style>
+        :root {
+            --primary: #0088cc;
+            --secondary: #005580;
+            --accent: #ff6600;
+            --light: #f0f8ff;
+            --dark: #002b40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), var(--secondary));
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(0, 40, 80, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 2px solid var(--accent);
+        }
+        
+        h1 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-section {
+            background: rgba(0, 60, 120, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid var(--primary);
+        }
+        
+        .hint-box {
+            background: rgba(0, 80, 160, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent);
+        }
+        
+        h2 {
+            color: #4dccff;
+            margin: 15px 0;
+            font-size: 1.8rem;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin: 15px 0;
+            font-size: 1.2rem;
+        }
+        
+        .code-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .code-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+        }
+        
+        .input-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        button {
+            background: linear-gradient(to bottom, var(--accent), #cc5200);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, #ff8533, #ff6600);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .reveal-section {
+            background: rgba(0, 100, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #00cc66;
+            animation: reveal 1s ease-out;
+        }
+        
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #arduino-image {
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            border: 3px solid var(--accent);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+        
+        .success {
+            color: #66ff66;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(102, 255, 102, 0.7);
+        }
+        
+        .hint-text {
+            color: #ffcc00;
+            font-style: italic;
+        }
+        
+        .attempts {
+            color: #ff9999;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .key {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 600px) {
+            .code-number, input {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>لعبة الشفرة  - اكتشف الجهاز السري</h1>
+        
+        <div class="game-section">
+            <h2>السيناريو</h2>
+            <p>لقد فقدنا جهازاً إلكترونياً مهماً في المختبر! هذا الجهاز أساسي لمشاريع الروبوتات والإنترنت الأشياء. كل ما وجدناه هو هذه الشفرة الرقمية الغامضة.</p>
+            
+            <div class="hint-box">
+                <p class="hint-text">💡 تلميح: كل رقم يمثل ترتيب الحرف في الأبجدية الإنجليزية (A=1, B=2, C=3, ...)</p>
+            </div>
+            
+            <div class="code-display">
+                <div class="code-number">15</div>
+                <div class="code-number">14</div>
+                <div class="code-number">9</div>
+                <div class="code-number">21</div>
+                <div class="code-number">4</div>
+                <div class="code-number">18</div>
+                <div class="code-number">1</div>
+            </div>
+            
+            <p>حاول فك الشفرة الرقمية لمعرفة اسم الجهاز المفقود (7 أحرف)</p>
+            
+            <div class="input-section" dir="ltr" >
+                <input type="text" maxlength="1" id="letter1">
+                <input type="text" maxlength="1" id="letter2">
+                <input type="text" maxlength="1" id="letter3">
+                <input type="text" maxlength="1" id="letter4">
+                <input type="text" maxlength="1" id="letter5">
+                <input type="text" maxlength="1" id="letter6">
+                <input type="text" maxlength="1" id="letter7">
+            </div>
+            
+            <button id="check-btn">تحقق من الحل</button>
+            <button id="hint-btn">أعطني تلميحاً</button>
+            
+            <div id="message"></div>
+            <div id="attempts" class="attempts">عدد المحاولات: <span id="count">0</span></div>
+        </div>
+        
+        <div id="reveal-section" class="reveal-section hidden">
+            <h2 class="success">لقد نجحت! 🎉</h2>
+            <p>الجهاز السري هو: <strong>الأردوينو</strong> (Arduino)</p>
+            
+            <div class="hint-box">
+                <p>💡 هل تعلم؟ الأردوينو هو لوحة تطوير إلكترونية مفتوحة المصدر تستخدم لبناء مشاريع إلكترونية تفاعلية.</p>
+                <p>مكان الولادة: <span class="key">إيطاليا</span> | اللون الشهير: <span class="key">أزرق</span> | عدد الدبابيس: <span class="key">20</span>+</p>
+            </div>
+            
+            <img id="arduino-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Arduino_Uno_-_R3.jpg/800px-Arduino_Uno_-_R3.jpg" alt="Arduino Board">
+            
+            <p>ستتعلم في هذه الدورة كيف تبرمج هذا الجهاز الرائع لتنفيذ مشاريعك الإبداعية!</p>
+            <button id="reset-btn">العب مرة أخرى</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            const checkBtn = document.getElementById('check-btn');
+            const hintBtn = document.getElementById('hint-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const messageEl = document.getElementById('message');
+            const countEl = document.getElementById('count');
+            const revealSection = document.getElementById('reveal-section');
+            const gameSection = document.querySelector('.game-section');
+            
+            let attempts = 0;
+            const solution = ['A', 'R', 'D', 'U', 'I', 'N', 'O'];
+            
+            // إدارة إدخال المستخدم
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (this.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // التحقق من الإجابة
+            checkBtn.addEventListener('click', checkSolution);
+            
+            // زر التلميح
+            hintBtn.addEventListener('click', function() {
+                messageEl.textContent = "💡 تلميح: الجهاز يبدأ بحرف 'A' وينتهي بحرف 'O'، وموطنه إيطاليا!";
+                messageEl.style.color = "#ffcc00";
+                
+                // زيادة عدد المحاولات عند طلب تلميح
+                attempts++;
+                countEl.textContent = attempts;
+            });
+            
+            // إعادة الضبط
+            resetBtn.addEventListener('click', function() {
+                revealSection.classList.add('hidden');
+                gameSection.classList.remove('hidden');
+                inputs.forEach(input => input.value = '');
+                messageEl.textContent = '';
+                attempts = 0;
+                countEl.textContent = attempts;
+                inputs[0].focus();
+            });
+            
+            function checkSolution() {
+                attempts++;
+                countEl.textContent = attempts;
+                
+                let isCorrect = true;
+                let userSolution = '';
+                
+                inputs.forEach((input, index) => {
+                    const userChar = input.value.toUpperCase();
+                    userSolution += userChar;
+                    
+                    if (userChar !== solution[index]) {
+                        isCorrect = false;
+                        input.style.borderColor = '#ff3333';
+                    } else {
+                        input.style.borderColor = '#33cc33';
+                    }
+                });
+                
+                if (isCorrect) {
+                    messageEl.textContent = 'إجابة صحيحة! لقد اكتشفت الجهاز السري بنجاح.';
+                    messageEl.style.color = '#33cc33';
+                    
+                    // الانتقال إلى قسم الكشف بعد تأخير قصير
+                    setTimeout(() => {
+                        gameSection.classList.add('hidden');
+                        revealSection.classList.remove('hidden');
+                    }, 2000);
+                } else {
+                    messageEl.textContent = `الإجابة "${userSolution}" غير صحيحة. حاول مرة أخرى!`;
+                    messageEl.style.color = '#ff6666';
+                    
+                    // هزة بصرية للإشارة إلى الخطأ
+                    document.querySelector('.game-section').animate([
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(10px)' },
+                        { transform: 'translateX(0)' }
+                    ], {
+                        duration: 300,
+                        iterations: 1
+                    });
+                }
+            }
+            
+            // التركيز على أول حقل إدخال عند التحميل
+            inputs[0].focus();
+        });
+    </script>
+</body>
+</html>
