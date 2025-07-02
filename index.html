@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الشفرة المشفرة - اكتشف الأردوينو</title>
+    <title>لعبة الشفرة - اكتشف الأردوينو</title>
     <style>
         :root {
             --primary: #0088cc;
@@ -11,6 +11,8 @@
             --accent: #ff6600;
             --light: #f0f8ff;
             --dark: #002b40;
+            --success: #2ecc71;
+            --error: #e74c3c;
         }
         
         * {
@@ -31,14 +33,36 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 850px;
             width: 100%;
-            background: rgba(0, 40, 80, 0.8);
+            background: rgba(0, 40, 80, 0.85);
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             text-align: center;
             border: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 20%, rgba(0, 88, 176, 0.2) 20%, rgba(0, 88, 176, 0.2) 21%, transparent 21%);
+            background-size: 50px 50px;
+            opacity: 0.4;
+            transform: rotate(30deg);
+            z-index: -1;
+            animation: circuit 20s linear infinite;
+        }
+        
+        @keyframes circuit {
+            0% { transform: rotate(30deg) translate(0, 0); }
+            100% { transform: rotate(30deg) translate(-50px, 50px); }
         }
         
         h1 {
@@ -46,6 +70,18 @@
             margin-bottom: 20px;
             font-size: 2.5rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
         }
         
         .game-section {
@@ -54,6 +90,8 @@
             padding: 25px;
             margin: 25px 0;
             border: 1px solid var(--primary);
+            position: relative;
+            overflow: hidden;
         }
         
         .hint-box {
@@ -62,6 +100,7 @@
             padding: 20px;
             margin: 20px 0;
             border-left: 5px solid var(--accent);
+            position: relative;
         }
         
         h2 {
@@ -96,6 +135,13 @@
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             border: 2px solid var(--accent);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 136, 204, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 136, 204, 0); }
         }
         
         .input-section {
@@ -116,12 +162,45 @@
             border-radius: 10px;
             background: var(--light);
             color: var(--dark);
+            transition: all 0.3s;
         }
         
         input:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 10px var(--accent);
+            transform: scale(1.1);
+        }
+        
+        .alphabet-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 70, 140, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 136, 204, 0.5);
+        }
+        
+        .letter-btn {
+            width: 35px;
+            height: 35px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            padding: 5px 15px 15px 12px;
+        }
+        
+        .letter-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
         }
         
         button {
@@ -173,6 +252,12 @@
             border-radius: 10px;
             border: 3px solid var(--accent);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s;
+        }
+        
+        #arduino-image:hover {
+            transform: rotate(5deg) scale(1.05);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.7);
         }
         
         .success {
@@ -191,6 +276,10 @@
             color: #ff9999;
             font-weight: bold;
             margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
         
         .key {
@@ -202,11 +291,43 @@
             font-family: monospace;
         }
         
+        .attempts-counter {
+            background: var(--secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--accent);
+            min-width: 40px;
+            display: inline-block;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #ff9900);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
         @media (max-width: 600px) {
             .code-number, input {
                 width: 45px;
                 height: 45px;
                 font-size: 1.3rem;
+            }
+            
+            .letter-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
             }
             
             h1 {
@@ -220,12 +341,17 @@
             p {
                 font-size: 1rem;
             }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>لعبة الشفرة  - اكتشف الجهاز السري</h1>
+        <h1>لعبة الشفرة - اكتشف الجهاز السري</h1>
         
         <div class="game-section">
             <h2>السيناريو</h2>
@@ -236,18 +362,18 @@
             </div>
             
             <div class="code-display" dir="ltr">
-                  <div class="code-number">1</div>
-                  <div class="code-number">18</div>
-                  <div class="code-number">4</div>
-                   <div class="code-number">21</div>
-                   <div class="code-number">9</div>
+                <div class="code-number">1</div>
+                <div class="code-number">18</div>
+                <div class="code-number">4</div>
+                <div class="code-number">21</div>
+                <div class="code-number">9</div>
                 <div class="code-number">14</div>
                 <div class="code-number">15</div>
             </div>
             
             <p>حاول فك الشفرة الرقمية لمعرفة اسم الجهاز المفقود (7 أحرف)</p>
             
-            <div class="input-section" dir="ltr" >
+            <div class="input-section" dir="ltr">
                 <input type="text" maxlength="1" id="letter1">
                 <input type="text" maxlength="1" id="letter2">
                 <input type="text" maxlength="1" id="letter3">
@@ -257,11 +383,25 @@
                 <input type="text" maxlength="1" id="letter7">
             </div>
             
-            <button id="check-btn">تحقق من الحل</button>
-            <button id="hint-btn">أعطني تلميحاً</button>
+            <!-- شريط الأحرف الأبجدية -->
+            <div class="alphabet-section" dir="ltr" id="alphabet-container">
+                <!-- سيتم توليد الأحرف ديناميكياً بواسطة الجافاسكريبت -->
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="button-group">
+                <button id="check-btn">تحقق من الحل</button>
+                <button id="hint-btn">أعطني تلميحاً</button>
+                <button id="auto-fill-btn">ملئ تلقائي</button>
+            </div>
             
             <div id="message"></div>
-            <div id="attempts" class="attempts">عدد المحاولات: <span id="count">0</span></div>
+            <div id="attempts" class="attempts">
+                عدد المحاولات: <span class="attempts-counter" id="count">0</span>
+            </div>
         </div>
         
         <div id="reveal-section" class="reveal-section hidden">
@@ -286,13 +426,39 @@
             const checkBtn = document.getElementById('check-btn');
             const hintBtn = document.getElementById('hint-btn');
             const resetBtn = document.getElementById('reset-btn');
+            const autoFillBtn = document.getElementById('auto-fill-btn');
             const messageEl = document.getElementById('message');
             const countEl = document.getElementById('count');
             const revealSection = document.getElementById('reveal-section');
             const gameSection = document.querySelector('.game-section');
+            const progressBar = document.getElementById('progress-bar');
+            const alphabetContainer = document.getElementById('alphabet-container');
             
             let attempts = 0;
             const solution = ['A', 'R', 'D', 'U', 'I', 'N', 'O'];
+            
+            // توليد الأحرف الأبجدية
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const button = document.createElement('button');
+                button.textContent = letter;
+                button.classList.add('letter-btn');
+                button.addEventListener('click', function() {
+                    // البحث عن أول حقل إدخال فارغ
+                    for (let j = 0; j < inputs.length; j++) {
+                        if (inputs[j].value === '') {
+                            inputs[j].value = letter;
+                            inputs[j].focus();
+                            // إذا لم يكن الحقل الأخير، ننتقل للحقل التالي
+                            if (j < inputs.length - 1) {
+                                inputs[j+1].focus();
+                            }
+                            break;
+                        }
+                    }
+                });
+                alphabetContainer.appendChild(button);
+            }
             
             // إدارة إدخال المستخدم
             inputs.forEach((input, index) => {
@@ -300,6 +466,9 @@
                     if (this.value.length === 1 && index < inputs.length - 1) {
                         inputs[index + 1].focus();
                     }
+                    
+                    // تحديث شريط التقدم
+                    updateProgress();
                 });
                 
                 input.addEventListener('keydown', function(e) {
@@ -309,6 +478,16 @@
                 });
             });
             
+            // تحديث شريط التقدم
+            function updateProgress() {
+                let filled = 0;
+                inputs.forEach(input => {
+                    if (input.value.trim() !== '') filled++;
+                });
+                const percentage = (filled / inputs.length) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+            
             // التحقق من الإجابة
             checkBtn.addEventListener('click', checkSolution);
             
@@ -316,21 +495,42 @@
             hintBtn.addEventListener('click', function() {
                 messageEl.textContent = "💡 تلميح: الجهاز يبدأ بحرف 'A' وينتهي بحرف 'O'، وموطنه إيطاليا!";
                 messageEl.style.color = "#ffcc00";
+                messageEl.style.fontWeight = "bold";
                 
                 // زيادة عدد المحاولات عند طلب تلميح
                 attempts++;
                 countEl.textContent = attempts;
             });
             
+            // زر الملء التلقائي
+            autoFillBtn.addEventListener('click', function() {
+                inputs.forEach((input, index) => {
+                    input.value = solution[index];
+                    input.style.borderColor = '#33cc33';
+                });
+                updateProgress();
+                messageEl.textContent = "تم ملئ الحقول تلقائياً!";
+                messageEl.style.color = "#33cc33";
+                
+                // إخفاء الرسالة بعد ثانيتين
+                setTimeout(() => {
+                    messageEl.textContent = "";
+                }, 2000);
+            });
+            
             // إعادة الضبط
             resetBtn.addEventListener('click', function() {
                 revealSection.classList.add('hidden');
                 gameSection.classList.remove('hidden');
-                inputs.forEach(input => input.value = '');
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.style.borderColor = '';
+                });
                 messageEl.textContent = '';
                 attempts = 0;
                 countEl.textContent = attempts;
                 inputs[0].focus();
+                progressBar.style.width = '0%';
             });
             
             function checkSolution() {
